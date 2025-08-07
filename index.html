@@ -159,18 +159,18 @@
       return;
     }
 
-    // Generate opponent bets
+   
     const opponents = [
       { name: "Opponent A", bet: getRandomHorse() },
       { name: "Opponent B", bet: getRandomHorse() },
       { name: "Opponent C", bet: getRandomHorse() }
     ];
 
-    // Display opponent bets
+    
     const opponentText = opponents.map(o => `${o.name} bets on Horse ${o.bet}`).join('<br>');
     document.getElementById("opponents").innerHTML = `Opponents:<br>${opponentText}`;
 
-    // Disable controls during race
+    
     document.getElementById('betHorse').disabled = true;
     document.getElementById('betAmount').disabled = true;
     document.querySelector('button').disabled = true;
@@ -188,7 +188,7 @@
           clearInterval(raceInterval);
           const winner = i + 1;
 
-          // Result for player
+          
           let result = `🏁 Horse ${winner} wins! `;
           if (winner === betHorse) {
             balance += betAmount;
@@ -198,7 +198,7 @@
             result += `You LOST ${betAmount} coins.`;
           }
 
-          // Result for opponents
+          
           result += "<br><br>Opponent Results:<br>";
           opponents.forEach(o => {
             if (o.bet === winner) {
