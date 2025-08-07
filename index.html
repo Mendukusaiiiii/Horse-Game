@@ -40,7 +40,7 @@
     #finishLine {
       position: absolute;
       top: 0;
-      right: 100px; /* Same as finishLine position in JS */
+      right: 100px;
       width: 5px;
       height: 100%;
       background: repeating-linear-gradient(
@@ -63,15 +63,25 @@
       margin: 5px;
     }
 
-    #result {
+    #result, #opponents {
       margin-top: 20px;
-      font-size: 20px;
+      font-size: 18px;
     }
 
     #balance {
       font-size: 18px;
       margin-top: 10px;
       color: #ffd700;
+    }
+
+    #credits {
+      position: fixed;
+      bottom: 10px;
+      left: 10px;
+      color: #ccc;
+      font-size: 14px;
+      font-style: italic;
+      z-index: 100;
     }
   </style>
 </head>
@@ -97,17 +107,17 @@
 </div>
 
 <div id="raceTrack">
-  
   <div id="finishLine"></div>
-
-  
   <div class="horse" id="horse1" style="top: 10px;">🐴 1</div>
   <div class="horse" id="horse2" style="top: 60px;">🐴 2</div>
   <div class="horse" id="horse3" style="top: 110px;">🐴 3</div>
   <div class="horse" id="horse4" style="top: 160px;">🐴 4</div>
 </div>
 
+<div id="opponents"></div>
 <div id="result"></div>
+
+<div id="credits">Made by Mendukusaiiiii</div>
 
 <script>
   const horses = [
@@ -126,6 +136,11 @@
   function resetRace() {
     horses.forEach(h => h.style.left = '0px');
     document.getElementById("result").textContent = '';
+    document.getElementById("opponents").textContent = '';
+  }
+
+  function getRandomHorse() {
+    return Math.floor(Math.random() * 4) + 1;
   }
 
   function startRace() {
@@ -144,9 +159,20 @@
       return;
     }
 
-    
+    // Generate opponent bets
+    const opponents = [
+      { name: "Opponent A", bet: getRandomHorse() },
+      { name: "Opponent B", bet: getRandomHorse() },
+      { name: "Opponent C", bet: getRandomHorse() }
+    ];
+
+    // Display opponent bets
+    const opponentText = opponents.map(o => `${o.name} bets on Horse ${o.bet}`).join('<br>');
+    document.getElementById("opponents").innerHTML = `Opponents:<br>${opponentText}`;
+
+    // Disable controls during race
     document.getElementById('betHorse').disabled = true;
-	document.getElementById('betAmount').disabled = true;
+    document.getElementById('betAmount').disabled = true;
     document.querySelector('button').disabled = true;
 
     const finishLine = document.getElementById('raceTrack').offsetWidth - 100;
@@ -162,23 +188,35 @@
           clearInterval(raceInterval);
           const winner = i + 1;
 
+          // Result for player
+          let result = `🏁 Horse ${winner} wins! `;
           if (winner === betHorse) {
             balance += betAmount;
-            document.getElementById('result').textContent = `🏁 Horse ${winner} wins! You WON ${betAmount} coins!`;
+            result += `You WON ${betAmount} coins!`;
           } else {
             balance -= betAmount;
-            document.getElementById('result').textContent = `🏁 Horse ${winner} wins! You LOST ${betAmount} coins.`;
+            result += `You LOST ${betAmount} coins.`;
           }
 
+          // Result for opponents
+          result += "<br><br>Opponent Results:<br>";
+          opponents.forEach(o => {
+            if (o.bet === winner) {
+              result += `${o.name} WON ${betAmount} coins!<br>`;
+            } else {
+              result += `${o.name} LOST ${betAmount} coins.<br>`;
+            }
+          });
+
+          document.getElementById('result').innerHTML = result;
           updateBalance();
 
           if (balance > 0) {
-            // Re-enable inputs
             document.getElementById('betHorse').disabled = false;
             document.getElementById('betAmount').disabled = false;
             document.querySelector('button').disabled = false;
           } else {
-            document.getElementById('result').textContent += " 💸 You're out of coins! Refresh to restart.";
+            document.getElementById('result').innerHTML += "<br>You're out of coins! Refresh to restart.";
           }
         }
       }
@@ -190,3 +228,4 @@
 
 </body>
 </html>
+
